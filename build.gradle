@@ -1,0 +1,95 @@
+buildscript {
+	ext {
+		springBootVersion = '4.0.5'
+		springDependencyManagementVersion = '1.1.7'
+	}
+}
+
+plugins {
+	id 'java'
+	id 'jacoco'
+	id 'org.springframework.boot' version "${springBootVersion}"
+	id 'io.spring.dependency-management' version "${springDependencyManagementVersion}"
+}
+
+group = 'com.payment'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	/** Spring Web MVC */
+	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+
+	/** Spring Kafka */
+	implementation 'org.springframework.boot:spring-boot-starter-kafka'
+	testImplementation 'org.springframework.boot:spring-boot-starter-kafka-test'
+
+	/** JSR 310 */
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+	/** JUnit Platform */
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	/** MySQL */
+	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	/** Spring Data JPA */
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
+
+	/** Flyway */
+	implementation 'org.springframework.boot:spring-boot-starter-flyway'
+	testImplementation 'org.springframework.boot:spring-boot-starter-flyway-test'
+	implementation 'org.flywaydb:flyway-mysql'
+
+	/** Spring Actuator */
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+	/** Lombok */
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.projectlombok:lombok'
+}
+
+test {
+	useJUnitPlatform{
+		excludeTags 'slow-test'
+	}
+	finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+	dependsOn test
+	reports {
+		html.required.set(true)
+		html.outputLocation.set(layout.buildDirectory.dir("jacoco"))
+	}
+
+	afterEvaluate {
+		classDirectories.setFrom(
+				files(classDirectories.files.collect {
+					fileTree(dir: it, excludes: [
+							'**/common/**',
+							'**/config/*',
+							'**/*Exception*',
+							'**/error/**',
+							'**/mock/**',
+							'**/dto/**',
+							'**/request/**',
+							'**/response/**'
+					])
+				})
+		)
+	}
+}
