@@ -1,6 +1,7 @@
 package com.payment.ledger_service.ledger.infrastructure.jpa.entity;
 
 import com.payment.ledger_service.common.domain.BaseTimeEntity;
+import com.payment.ledger_service.ledger.domain.ReferenceType;
 import com.payment.ledger_service.ledger.domain.TransactionType;
 import com.payment.ledger_service.ledger.domain.TransactionTypeExt;
 import jakarta.persistence.Column;
@@ -34,6 +35,9 @@ public class JpaLedgerTransactionEntity extends BaseTimeEntity {
     private Long id;
 
     @Column(nullable = false)
+    private Long ledgerId;
+
+    @Column(nullable = false)
     private String idempotencyKey;
 
     @Enumerated(EnumType.STRING)
@@ -44,7 +48,8 @@ public class JpaLedgerTransactionEntity extends BaseTimeEntity {
     @Column(name = "transaction_type_ext_code", nullable = false)
     private TransactionTypeExt transactionTypeExt;
 
-    private String referenceType;
+    @Enumerated(EnumType.STRING)
+    private ReferenceType referenceType;
 
     private String referenceId;
 
